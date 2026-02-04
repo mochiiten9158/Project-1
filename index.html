@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Graphical Perception Study</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+  <div id="container">
+    <h2 id="prompt">
+      What percentage is the smaller value relative to the larger value?
+    </h2>
+
+    <svg id="viz" width="600" height="400"></svg>
+
+    <div id="controls">
+      <input type="range" id="slider" min="0" max="100" value="50" />
+      <span id="slider-value">50%</span>
+      <br />
+      <button id="next-btn">Next</button>
+    </div>
+
+    <div id="completion" style="display:none;">
+      <h3>Experiment Complete</h3>
+      <button id="download-btn">Download CSV</button>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="designs.js"></script>
+  <script src="experiment.js"></script>
+</body>
+</html>
