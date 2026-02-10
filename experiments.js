@@ -4,6 +4,7 @@ const sliderValue = document.getElementById("slider-value");
 const nextBtn = document.getElementById("next-btn");
 
 let trials = generateTrials();
+console.log(trials.length); // MUST be 80
 let current = 0;
 let startTime = null;
 let results = [];
