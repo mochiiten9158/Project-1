@@ -53,6 +53,9 @@ designs.aligned_bars = function(svg, ratio) {
     .attr("fill", d =>
       (d === big || d === small) ? "blue" : "#b6b6b6"
     );
+    return {
+    largerIndex: data.indexOf(big)
+  };
 };
 
 designs.stacked_bars = function(svg, ratio) {
@@ -62,10 +65,10 @@ designs.stacked_bars = function(svg, ratio) {
   const bars = Math.random() < 0.5
     ? [
         { value: big, fill: "#000000" },
-        { value: small, fill: "pink" }
+        { value: small, fill: "orange" }
       ]
     : [
-        { value: small, fill: "pink" },
+        { value: small, fill: "orange" },
         { value: big, fill: "#000000" }
       ];
 
@@ -82,21 +85,19 @@ designs.stacked_bars = function(svg, ratio) {
     })
     .attr("height", d => d.value)
     .attr("fill", d => d.fill);
+  return {
+    largerIndex: data.indexOf(big)
+  };
 };
 
 designs.pie_angle = function(svg, ratio) {
   const pie = d3.pie().value(d => d.value);
   const arc = d3.arc().innerRadius(0).outerRadius(120);
 
-  const slices = Math.random() < 0.5
-    ? [
-        { value: ratio, target: true },
-        { value: 100 - ratio, target: false }
-      ]
-    : [
-        { value: 100 - ratio, target: false },
-        { value: ratio, target: true }
-      ];
+  const slices = [
+    { value: 100, target: false },           // reference (larger)
+    { value: 100 * (ratio / 100), target: true }
+  ];
 
   svg.append("g")
     .attr("transform", "translate(300,200)")
@@ -104,38 +105,35 @@ designs.pie_angle = function(svg, ratio) {
     .data(pie(slices))
     .join("path")
     .attr("d", arc)
-    .attr("fill", d => d.data.target ? "pink" : "#187681");
+    .attr("fill", (d, i) => i === 0 ? "#187681" : "orange");
+
+  return { largerSide: "left" };
 };
+
 
 designs.circle_area = function(svg, ratio) {
   const big = 80;
   const small = Math.sqrt(ratio / 100) * big;
 
   const cy = 200;
-  const padding = big + 10;   // ensure full visibility
+  const leftX = 180;
+  const rightX = 420;
 
-  // Two safe x positions
-  const leftX  = padding;
-  const rightX = 600 - padding; // assuming ~600px wide SVG
-
-  const circles = Math.random() < 0.5
-    ? [
-        { r: big,   cx: leftX,  fill: "#ddd", target: false },
-        { r: small, cx: rightX, fill: "orange", target: true }
-      ]
-    : [
-        { r: small, cx: leftX,  fill: "orange", target: true },
-        { r: big,   cx: rightX, fill: "#ddd", target: false }
-      ];
-
-  svg.selectAll("circle")
-    .data(circles)
-    .join("circle")
-    .attr("cx", d => d.cx)
+  svg.append("circle")
+    .attr("cx", leftX)
     .attr("cy", cy)
-    .attr("r", d => d.r)
-    .attr("fill", d => d.fill);
+    .attr("r", big)
+    .attr("fill", "#ddd");
+
+  svg.append("circle")
+    .attr("cx", rightX)
+    .attr("cy", cy)
+    .attr("r", small)
+    .attr("fill", "orange");
+
+  return { largerSide: "left" };
 };
+
 
 /* ===============================
    NEW encodings
@@ -146,129 +144,91 @@ designs.color_luminance = function(svg, ratio) {
   const h = 100;
   const y = 150;
 
-  const targetLum = ratio / 100;
-  const refLum = 0.5;   // fixed reference (adjust if needed)
+  const leftLum = 0.8;                  // FIXED larger luminance
+  const rightLum = ratio / 100;
 
-  const leftX  = 180;
+  const leftX = 180;
   const rightX = 360;
 
-  const patches = Math.random() < 0.5
-    ? [
-        { x: leftX,  lum: targetLum, target: true },
-        { x: rightX, lum: refLum,    target: false }
-      ]
-    : [
-        { x: leftX,  lum: refLum,    target: false },
-        { x: rightX, lum: targetLum, target: true }
-      ];
-
-  svg.selectAll("rect")
-    .data(patches)
-    .join("rect")
-    .attr("x", d => d.x)
+  svg.append("rect")
+    .attr("x", leftX)
     .attr("y", y)
     .attr("width", w)
     .attr("height", h)
-    .attr("fill", d => d3.interpolateGreys(d.lum));
+    .attr("fill", d3.interpolateGreys(leftLum));
+
+  svg.append("rect")
+    .attr("x", rightX)
+    .attr("y", y)
+    .attr("width", w)
+    .attr("height", h)
+    .attr("fill", d3.interpolateGreys(rightLum));
+
+  return { largerSide: "left" };
 };
 
 designs.line_slope = function(svg, ratio) {
-  const delta = ratio * 1.5;   // difference in slope
-  const baseSlope = 15;        // mild reference angle
+  const delta = ratio * 1.5;
+  const baseSlope = 30;
 
   const yBase = 300;
   const lineLen = 140;
 
-  const leftX  = 120;
+  const leftX = 120;
   const rightX = 340;
 
-  const lines = Math.random() < 0.5
-    ? [
-        { x: leftX,  slope: baseSlope + delta, target: true },
-        { x: rightX, slope: baseSlope,         target: false }
-      ]
-    : [
-        { x: leftX,  slope: baseSlope,         target: false },
-        { x: rightX, slope: baseSlope + delta, target: true }
-      ];
-
-  svg.selectAll("line")
-    .data(lines)
-    .join("line")
-    .attr("x1", d => d.x)
-    .attr("x2", d => d.x + lineLen)
+  // larger slope on LEFT
+  svg.append("line")
+    .attr("x1", leftX)
+    .attr("x2", leftX + lineLen)
     .attr("y1", yBase)
-    .attr("y2", d => yBase - d.slope)
+    .attr("y2", yBase - (baseSlope + delta))
     .attr("stroke", "orange")
     .attr("stroke-width", 4);
+
+  svg.append("line")
+    .attr("x1", rightX)
+    .attr("x2", rightX + lineLen)
+    .attr("y1", yBase)
+    .attr("y2", yBase - baseSlope)
+    .attr("stroke", "orange")
+    .attr("stroke-width", 4);
+
+  return { largerSide: "left" };
 };
 
-// designs.radial_position = function(svg, ratio) {
-//   const bigR = ratio * 1.5;
-//   const refR = 40;
-
-//   const cy = 200;
-//   const padding = Math.max(bigR, refR) + 10;
-
-//   const leftX  = padding + 80;
-//   const rightX = 600 - padding - 80; // assume ~600px SVG
-
-//   const circles = Math.random() < 0.5
-//     ? [
-//         { cx: leftX,  r: bigR, target: true },
-//         { cx: rightX, r: refR, target: false }
-//       ]
-//     : [
-//         { cx: leftX,  r: refR, target: false },
-//         { cx: rightX, r: bigR, target: true }
-//       ];
-
-//   svg.selectAll("circle")
-//     .data(circles)
-//     .join("circle")
-//     .attr("cx", d => d.cx)
-//     .attr("cy", cy)
-//     .attr("r", d => d.r)
-//     .attr("fill", "none")
-//     .attr("stroke", "orange")
-//     .attr("stroke-width", 4);
-// };
 
 designs.color_saturation = function(svg, ratio) {
   const w = 160;
   const h = 100;
   const y = 150;
 
-  const hue = 30;          // orange hue
-  const lightness = 0.5;   // fixed luminance
+  const hue = 30;
+  const lightness = 0.5;
 
-  const targetSat = ratio / 100;
-  const refSat = 0.4;
+  const leftSat = 0.9;                  // FIXED larger saturation
+  const rightSat = ratio / 100;
 
-  const leftX  = 180;
+  const leftX = 180;
   const rightX = 360;
 
-  const patches = Math.random() < 0.5
-    ? [
-        { x: leftX,  sat: targetSat, target: true },
-        { x: rightX, sat: refSat,    target: false }
-      ]
-    : [
-        { x: leftX,  sat: refSat,    target: false },
-        { x: rightX, sat: targetSat, target: true }
-      ];
-
-  svg.selectAll("rect")
-    .data(patches)
-    .join("rect")
-    .attr("x", d => d.x)
+  svg.append("rect")
+    .attr("x", leftX)
     .attr("y", y)
     .attr("width", w)
     .attr("height", h)
-    .attr("fill", d =>
-      d3.hsl(hue, d.sat, lightness).toString()
-    );
+    .attr("fill", d3.hsl(hue, leftSat, lightness));
+
+  svg.append("rect")
+    .attr("x", rightX)
+    .attr("y", y)
+    .attr("width", w)
+    .attr("height", h)
+    .attr("fill", d3.hsl(hue, rightSat, lightness));
+
+  return { largerSide: "left" };
 };
+
 
 designs.star_area = function(svg, ratio) {
   const baseOuter = 50;
@@ -276,41 +236,26 @@ designs.star_area = function(svg, ratio) {
 
   const scale = Math.sqrt(ratio / 100);
 
-  const target = {
-    outer: baseOuter * scale,
-    inner: baseInner * scale,
-    target: true
-  };
-
-  const reference = {
-    outer: baseOuter,
-    inner: baseInner,
-    target: false
-  };
-
+  const leftX = 200;
+  const rightX = 400;
   const cy = 200;
-  const padding = Math.max(target.outer, baseOuter) + 10;
 
-  const leftX  = padding + 120;
-  const rightX = 600 - padding - 120; // assumes ~600px SVG
-
-  const stars = Math.random() < 0.5
-    ? [
-        { ...target, cx: leftX },
-        { ...reference, cx: rightX }
-      ]
-    : [
-        { ...reference, cx: leftX },
-        { ...target, cx: rightX }
-      ];
-
-  svg.selectAll("path")
-    .data(stars)
-    .join("path")
-    .attr("d", d =>
-      starPath(d.cx, cy, d.outer, d.inner, 5)
-    )
+  // Larger star on LEFT
+  svg.append("path")
+    .attr("d", starPath(leftX, cy, baseOuter, baseInner, 5))
     .attr("fill", "orange")
-    .attr("stroke", "#333")
-    .attr("stroke-width", 1);
+    .attr("stroke", "#333");
+
+  svg.append("path")
+    .attr("d", starPath(
+      rightX,
+      cy,
+      baseOuter * scale,
+      baseInner * scale,
+      5
+    ))
+    .attr("fill", "orange")
+    .attr("stroke", "#333");
+
+  return { largerSide: "left" };
 };

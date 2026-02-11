@@ -8,25 +8,51 @@
 </head>
 <body>
 
-  <div id="container">
-    <h2 id="prompt">
-      What percentage of the larger value is the smaller value?
-    </h2>
+    <div id="container">
 
-    <svg id="viz" width="600" height="400"></svg>
+      <!-- INSTRUCTIONS SCREEN -->
+      <div id="instructions">
+        <h2>Graphical Perception Study</h2>
 
-    <div id="controls">
-      <input type="range" id="slider" min="0" max="100" value="50" />
-      <span id="slider-value">50%</span>
-      <br />
-      <button id="next-btn">Next</button>
+        <p>
+          In this study, you will compare two visual elements and estimate:
+        </p>
+
+        <strong>
+          What percentage of the larger value is the smaller value?
+        </strong>
+
+        <div id="encoding-description" style="margin-top:20px;">
+          <!-- Filled dynamically -->
+        </div>
+
+        <br />
+        <button id="start-btn">Start Experiment</button>
+      </div>
+
+      <!-- EXPERIMENT SCREEN -->
+      <div id="experiment" style="display:none;">
+        <h2 id="prompt">
+          What percentage of the larger value is the smaller value?
+        </h2>
+
+        <svg id="viz" width="600" height="400"></svg>
+
+        <div id="controls">
+          <input type="range" id="slider" min="0" max="100" value="50" />
+          <span id="slider-value">50%</span>
+          <br />
+          <button id="next-btn">Next</button>
+        </div>
+
+        <div id="completion" style="display:none;">
+          <h3>Experiment Complete</h3>
+          <button id="download-btn">Download CSV</button>
+        </div>
+      </div>
+
     </div>
 
-    <div id="completion" style="display:none;">
-      <h3>Experiment Complete</h3>
-      <button id="download-btn">Download CSV</button>
-    </div>
-  </div>
 
   <script src="data.js"></script>
   <script src="designs.js"></script>
