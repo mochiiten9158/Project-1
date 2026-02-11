@@ -16,7 +16,7 @@ const ENCODING_DESCRIPTIONS = {
 
 
 let trials = generateTrials();
-console.log(trials.length); // MUST be 80
+console.log(trials.length); // MUST be 90
 let current = 0;
 let startTime = null;
 let results = [];
@@ -69,7 +69,7 @@ descriptionDiv.innerHTML = `
   </p>
 
   <div style="margin:10px 0;">
-    <input type="range" min="0" max="100" value="50" disabled style="width:250px;">
+    <input type="range" min="0" max="100" value="50" disabled class="demo-slider">
     <span>50%</span>
   </div>
 

@@ -140,57 +140,79 @@ designs.circle_area = function(svg, ratio) {
 ================================ */
 
 designs.color_luminance = function(svg, ratio) {
+
   const w = 160;
   const h = 100;
   const y = 150;
 
-  const leftLum = 0.8;                  // FIXED larger luminance
-  const rightLum = ratio / 100;
-
   const leftX = 180;
   const rightX = 360;
 
+  // In interpolateGreys:
+  // 0 = white (brightest)
+  // 1 = black (darkest)
+
+  const leftGreyValue = 0.2;  // constant bright anchor (low = bright)
+
+  // ratio = percentage of larger
+  const proportion = ratio / 100;
+
+  // Move toward darker (1.0) as ratio decreases
+  const rightGreyValue =
+      leftGreyValue + (1 - leftGreyValue) * (1 - proportion);
+
+  // LEFT (always brighter)
   svg.append("rect")
     .attr("x", leftX)
     .attr("y", y)
     .attr("width", w)
     .attr("height", h)
-    .attr("fill", d3.interpolateGreys(leftLum));
+    .attr("fill", d3.interpolateGreys(leftGreyValue));
 
+  // RIGHT (always darker)
   svg.append("rect")
     .attr("x", rightX)
     .attr("y", y)
     .attr("width", w)
     .attr("height", h)
-    .attr("fill", d3.interpolateGreys(rightLum));
+    .attr("fill", d3.interpolateGreys(rightGreyValue));
 
   return { largerSide: "left" };
 };
 
 designs.line_slope = function(svg, ratio) {
-  const delta = ratio * 1.5;
-  const baseSlope = 30;
+
+  const maxSlope = 160;   // constant larger slope (LEFT)
+  const minSlope = 20;    // minimum possible slope (avoid flat line)
 
   const yBase = 300;
   const lineLen = 140;
 
-  const leftX = 120;
+  const leftX  = 120;
   const rightX = 340;
 
-  // larger slope on LEFT
+  // ratio is interpreted as: smaller is what % of larger
+  // so convert percentage to proportion
+  const proportion = ratio / 100;
+
+  // smaller slope scales from minSlope up to maxSlope
+  const smallerSlope = minSlope + (maxSlope - minSlope) * proportion;
+
+  // ---- LEFT: constant larger ----
   svg.append("line")
     .attr("x1", leftX)
     .attr("x2", leftX + lineLen)
     .attr("y1", yBase)
-    .attr("y2", yBase - (baseSlope + delta))
+    .attr("y2", yBase - maxSlope)
     .attr("stroke", "orange")
     .attr("stroke-width", 4);
 
+  // ---- RIGHT: changing smaller ----
   svg.append("line")
     .attr("x1", rightX)
     .attr("x2", rightX + lineLen)
     .attr("y1", yBase)
-    .attr("y2", yBase - baseSlope)
+    .attr("y2", yBase - smallerSlope)
     .attr("stroke", "orange")
     .attr("stroke-width", 4);
 

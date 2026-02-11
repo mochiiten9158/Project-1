@@ -17,3 +17,9 @@ svg {
   border: 1px solid #dddddd;
   background: white;
 }
+
+input[type="range"],
+.demo-slider {
+  width: 250px;
+  accent-color: rgb(47, 0, 255);
+}
