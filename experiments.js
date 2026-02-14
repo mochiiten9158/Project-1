@@ -4,13 +4,13 @@ const sliderValue = document.getElementById("slider-value");
 const nextBtn = document.getElementById("next-btn");
 
 const ENCODING_DESCRIPTIONS = {
-  aligned_bars: "You will compare the LENGTH of two bars aligned to a common baseline.",
-  stacked_bars: "You will compare the LENGTH of stacked bar segments.",
+  aligned_bars: "You will compare the LENGTH of two blue bars aligned to a common baseline.",
+  stacked_bars: "You will compare the LENGTH of colored stacked bar segments.",
   pie_angle: "You will compare the ANGLE of two pie slices.",
   circle_area: "You will compare the AREA of two circles.",
   line_slope: "You will compare the SLOPE (angle) of two lines.",
-  color_luminance: "You will compare the LUMINANCE (brightness) of two color patches.",
-  color_saturation: "You will compare the COLOR SATURATION (intensity) of two color patches.",
+  color_luminance: "You will compare the LUMINANCE (brightness) of two highlighted color patches.",
+  color_saturation: "You will compare the COLOR SATURATION (intensity) of two highlighted color patches.",
   star_area: "You will compare the AREA of two star-shaped glyphs."
 };
 
